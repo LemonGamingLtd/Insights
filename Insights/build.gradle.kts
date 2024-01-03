@@ -9,6 +9,7 @@ val dependencyDir = "$group.dependencies"
 
 repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -17,6 +18,7 @@ dependencies {
     implementation("me.lucko:commodore:${VersionConstants.commodoreVersion}")
     implementation("cloud.commandframework:cloud-paper:${VersionConstants.cloudVersion}")
     implementation("cloud.commandframework:cloud-annotations:${VersionConstants.cloudVersion}")
+    implementation("com.github.NahuLD:folia-scheduler-wrapper:${VersionConstants.foliaSchedulerWrapperVersion}")
     compileOnly(project(":Insights-API"))
 }
 
@@ -25,6 +27,7 @@ tasks.withType<ShadowJar> {
     relocate("cloud.commandframework", "$dependencyDir.cloud")
     relocate("io.leangen.geantyref", "$dependencyDir.typetoken")
     relocate("me.lucko.commodore", "$dependencyDir.commodore")
+    relocate("me.nahu.scheduler", "$dependencyDir.scheduler")
 }
 
 bukkit {
@@ -34,6 +37,7 @@ bukkit {
     website = "https://github.com/InsightsPlugin/Insights"
     softDepend = listOf("PlaceholderAPI")
     authors = listOf("FrankHeijden")
+    foliaSupported = true
     permissions {
         register("insights.info") {
             description = "Allows you to see information about insights"

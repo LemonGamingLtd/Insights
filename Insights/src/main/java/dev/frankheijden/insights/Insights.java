@@ -1,7 +1,5 @@
 package dev.frankheijden.insights;
 
-import static dev.frankheijden.minecraftreflection.MinecraftReflectionVersion.isMin;
-
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.arguments.parser.ParserRegistry;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
@@ -52,11 +50,15 @@ import dev.frankheijden.insights.tasks.EntityTrackerTask;
 import dev.frankheijden.insights.tasks.PlayerTrackerTask;
 import io.leangen.geantyref.TypeToken;
 import io.papermc.lib.PaperLib;
+import me.nahu.scheduler.wrapper.WrappedScheduler;
+import me.nahu.scheduler.wrapper.WrappedSchedulerBuilder;
+import me.nahu.scheduler.wrapper.task.WrappedTask;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -66,6 +68,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
+
+import static dev.frankheijden.minecraftreflection.MinecraftReflectionVersion.isMin;
 
 public class Insights extends InsightsPlugin {
 
@@ -90,17 +94,19 @@ public class Insights extends InsightsPlugin {
     private ScanHistory scanHistory;
     private ListenerManager listenerManager;
     private InsightsPlaceholderExpansion placeholderExpansion;
-    private BukkitTask playerTracker = null;
-    private BukkitTask updateChecker = null;
+    private WrappedTask playerTracker = null;
+    private WrappedTask updateChecker = null;
     private BukkitAudiences audiences = null;
     private RedstoneUpdateCount redstoneUpdateCount = null;
     private ChunkTeleport chunkTeleport;
     private InsightsNMS nms;
+    private WrappedScheduler scheduler;
 
     @Override
     public void onLoad() {
         super.onLoad();
         instance = this;
+        scheduler = WrappedSchedulerBuilder.builder().plugin(this).build();
     }
 
     @Override
@@ -145,7 +151,7 @@ public class Insights extends InsightsPlugin {
             ex.printStackTrace();
         }
 
-        getServer().getScheduler().runTaskLater(this, () -> {
+        getScheduler().runTaskLater(() -> {
             try {
                 addonManager.loadAddons();
             } catch (IOException ex) {
@@ -159,8 +165,8 @@ public class Insights extends InsightsPlugin {
         worldChunkScanTracker = new WorldChunkScanTracker();
         addonScanTracker = new AddonScanTracker();
         executor = ContainerExecutorService.newExecutor(
-                settings.SCANS_CONCURRENT_THREADS,
-                settings.SCANS_TIMEOUT_MILLIS
+            settings.SCANS_CONCURRENT_THREADS,
+            settings.SCANS_TIMEOUT_MILLIS
         );
         chunkContainerExecutor = new ChunkContainerExecutor(nms, executor, worldStorage, worldChunkScanTracker);
         metricsManager = new MetricsManager(this);
@@ -174,7 +180,7 @@ public class Insights extends InsightsPlugin {
         if (!PaperLib.isPaper()) {
             entityTrackerTask = new EntityTrackerTask(this);
             var interval = settings.SPIGOT_ENTITY_TRACKER_INTERVAL_TICKS;
-            Bukkit.getScheduler().runTaskTimer(this, entityTrackerTask, 0, interval);
+            getScheduler().runTaskTimer(entityTrackerTask, 0, interval);
         }
 
         reload();
@@ -211,6 +217,11 @@ public class Insights extends InsightsPlugin {
     @Override
     public InsightsNMS getNMS() {
         return nms;
+    }
+
+    @NotNull
+    public WrappedScheduler getScheduler() {
+        return scheduler;
     }
 
     public Optional<EntityTrackerTask> getEntityTracker() {
@@ -254,9 +265,9 @@ public class Insights extends InsightsPlugin {
             try {
                 Files.createDirectory(limitsPath);
                 IOUtils.copyResources(limitsPath, getClassLoader(), Arrays.asList(
-                        "bed-limit.yml",
-                        "redstone-limit.yml",
-                        "tile-limit.yml"
+                    "bed-limit.yml",
+                    "redstone-limit.yml",
+                    "tile-limit.yml"
                 ));
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -285,10 +296,10 @@ public class Insights extends InsightsPlugin {
         PaperCommandManager<CommandSender> commandManager;
         try {
             commandManager = new PaperCommandManager<>(
-                    this,
-                    AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build(),
-                    Function.identity(),
-                    Function.identity()
+                this,
+                AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build(),
+                Function.identity(),
+                Function.identity()
             );
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -298,24 +309,24 @@ public class Insights extends InsightsPlugin {
         // Register parsers
         ParserRegistry<CommandSender> parserRegistry = commandManager.parserRegistry();
         parserRegistry.registerParserSupplier(
-                TypeToken.get(new TypeToken<Limit>() {
-                }.getType()),
-                options -> new LimitArgument.LimitParser()
+            TypeToken.get(new TypeToken<Limit>() {
+            }.getType()),
+            options -> new LimitArgument.LimitParser()
         );
         parserRegistry.registerParserSupplier(
-                TypeToken.get(new TypeToken<ScanObject<?>[]>() {
-                }.getType()),
-                options -> new ScanObjectArrayArgument.ScanObjectArrayParser()
+            TypeToken.get(new TypeToken<ScanObject<?>[]>() {
+            }.getType()),
+            options -> new ScanObjectArrayArgument.ScanObjectArrayParser()
         );
         parserRegistry.registerParserSupplier(
-                TypeToken.get(new TypeToken<CommandScanHistory.Page>() {
-                }.getType()),
-                options -> new ScanHistoryPageArgument.ScanHistoryPageParser()
+            TypeToken.get(new TypeToken<CommandScanHistory.Page>() {
+            }.getType()),
+            options -> new ScanHistoryPageArgument.ScanHistoryPageParser()
         );
         parserRegistry.registerParserSupplier(
-                TypeToken.get(new TypeToken<World>() {
-                }.getType()),
-                options -> new WorldArgument.WorldParser()
+            TypeToken.get(new TypeToken<World>() {
+            }.getType()),
+            options -> new WorldArgument.WorldParser()
         );
 
         // Register capabilities if allowed
@@ -334,9 +345,9 @@ public class Insights extends InsightsPlugin {
 
         // Create Annotation Parser
         AnnotationParser<CommandSender> annotationParser = new AnnotationParser<>(
-                commandManager,
-                CommandSender.class,
-                parameters -> SimpleCommandMeta.empty()
+            commandManager,
+            CommandSender.class,
+            parameters -> SimpleCommandMeta.empty()
         );
 
         // Parse commands
@@ -427,11 +438,10 @@ public class Insights extends InsightsPlugin {
         }
 
         if (settings.CHUNK_SCANS_MODE == Settings.ChunkScanMode.ALWAYS) {
-            playerTracker = getServer().getScheduler().runTaskTimerAsynchronously(
-                    this,
-                    new PlayerTrackerTask(this),
-                    0,
-                    settings.CHUNK_SCANS_PLAYER_TRACKER_INTERVAL_TICKS
+            playerTracker = getScheduler().runTaskTimerAsynchronously(
+                new PlayerTrackerTask(this),
+                1L,
+                settings.CHUNK_SCANS_PLAYER_TRACKER_INTERVAL_TICKS
             );
         }
 
@@ -440,11 +450,10 @@ public class Insights extends InsightsPlugin {
         }
 
         if (settings.UPDATE_CHECKER_ENABLED) {
-            updateChecker = getServer().getScheduler().runTaskTimerAsynchronously(
-                    this,
-                    new UpdateCheckerTask(this),
-                    20,
-                    20L * settings.UPDATE_CHECKER_INTERVAL_SECONDS
+            updateChecker = getScheduler().runTaskTimerAsynchronously(
+                new UpdateCheckerTask(this),
+                20,
+                20L * settings.UPDATE_CHECKER_INTERVAL_SECONDS
             );
         }
 

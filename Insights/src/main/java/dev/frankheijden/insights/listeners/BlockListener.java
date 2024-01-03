@@ -39,12 +39,16 @@ import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class BlockListener extends InsightsListener {
 
+    private final Insights plugin;
+
     public BlockListener(Insights plugin) {
         super(plugin);
+        this.plugin = Objects.requireNonNull(plugin);
     }
 
     /**
@@ -338,7 +342,7 @@ public class BlockListener extends InsightsListener {
             materials[i] = material;
         }
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        plugin.getScheduler().runTaskLaterAtLocation(event.getBlock().getLocation(), () -> {
             for (var i = 0; i < blocks.size(); i++) {
                 var relative = blocks.get(i).getRelative(event.getDirection());
                 var material = relative.getType();

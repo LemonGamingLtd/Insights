@@ -15,4 +15,5 @@ object VersionConstants {
     const val assertjVersion = "3.23.1"
     const val mockitoVersion = "4.11.0"
     const val jupiterVersion = "5.9.1"
+    const val foliaSchedulerWrapperVersion = "v0.0.2";
 }
