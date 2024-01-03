@@ -1,5 +1,7 @@
 package dev.frankheijden.insights;
 
+import static dev.frankheijden.minecraftreflection.MinecraftReflectionVersion.isMin;
+
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.arguments.parser.ParserRegistry;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
@@ -58,7 +60,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -68,8 +69,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
-
-import static dev.frankheijden.minecraftreflection.MinecraftReflectionVersion.isMin;
 
 public class Insights extends InsightsPlugin {
 

@@ -5,7 +5,6 @@ import dev.frankheijden.insights.api.concurrent.ScanOptions;
 import dev.frankheijden.insights.api.objects.chunk.ChunkLocation;
 import dev.frankheijden.insights.api.tasks.InsightsAsyncTask;
 import org.bukkit.entity.Player;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
