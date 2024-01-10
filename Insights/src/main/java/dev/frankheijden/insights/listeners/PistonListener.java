@@ -104,7 +104,10 @@ public class PistonListener extends InsightsListener {
                     plugin.getAddonStorage().put(region.getKey(), storage);
                 });
             } else {
-                plugin.getChunkContainerExecutor().submit(chunk);
+                plugin.getScheduler().runTaskAtLocation(
+                    chunk.getBlock(0, 0, 0).getLocation(),
+                    () -> plugin.getChunkContainerExecutor().submit(chunk)
+                );
             }
             return true;
         }

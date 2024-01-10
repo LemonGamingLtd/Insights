@@ -39,16 +39,12 @@ import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class BlockListener extends InsightsListener {
 
-    private final Insights plugin;
-
     public BlockListener(Insights plugin) {
         super(plugin);
-        this.plugin = Objects.requireNonNull(plugin);
     }
 
     /**

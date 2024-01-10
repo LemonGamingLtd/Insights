@@ -2,6 +2,7 @@ package dev.frankheijden.insights.api.objects.chunk;
 
 import dev.frankheijden.insights.api.utils.ChunkUtils;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import java.util.Objects;
 
@@ -34,6 +35,18 @@ public class ChunkLocation {
 
     public int getZ() {
         return z;
+    }
+
+    public int getBlockX() {
+        return getX() << 4;
+    }
+
+    public int getBlockZ() {
+        return getZ() << 4;
+    }
+
+    public Location getBlockLocation() {
+        return new Location(world, getBlockX(), 0, getBlockZ());
     }
 
     public long getKey() {

@@ -58,6 +58,7 @@ subprojects {
         implementation("net.kyori:adventure-api:${VersionConstants.adventureVersion}")
         implementation("net.kyori:adventure-platform-bukkit:${VersionConstants.adventurePlatformVersion}")
         implementation("net.kyori:adventure-text-minimessage:${VersionConstants.adventureVersion}")
+        implementation("com.github.NahuLD:folia-scheduler-wrapper:${VersionConstants.foliaSchedulerWrapperVersion}")
         if (!nms || nmsImpl) {
             compileOnly(project(":Insights-NMS-Core"))
         }
@@ -108,6 +109,7 @@ subprojects {
         relocate("org.bstats", "$dependencyDir.bstats")
         relocate("net.kyori.adventure", "$dependencyDir.adventure")
         relocate("net.kyori.examination", "$dependencyDir.examination")
+        relocate("me.nahu.scheduler", "$dependencyDir.scheduler")
         if (nmsImpl) {
             relocate(project.group.toString().replaceAfterLast('.', "impl"), project.group.toString())
         }

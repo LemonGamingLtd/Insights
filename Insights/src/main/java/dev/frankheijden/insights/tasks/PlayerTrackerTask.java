@@ -7,7 +7,6 @@ import dev.frankheijden.insights.api.tasks.InsightsAsyncTask;
 import org.bukkit.entity.Player;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,11 +17,8 @@ public class PlayerTrackerTask extends InsightsAsyncTask {
     private final Map<ChunkLocation, Long> scanLocations = new ConcurrentHashMap<>();
     private static final Set<Integer> knownErrorStackTraceHashes = ConcurrentHashMap.newKeySet();
 
-    private final Insights plugin;
-
     public PlayerTrackerTask(Insights plugin) {
         super(plugin);
-        this.plugin = Objects.requireNonNull(plugin);
     }
 
     @Override

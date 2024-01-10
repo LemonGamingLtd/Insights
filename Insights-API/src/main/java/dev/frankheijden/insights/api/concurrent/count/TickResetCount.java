@@ -1,7 +1,7 @@
 package dev.frankheijden.insights.api.concurrent.count;
 
 import dev.frankheijden.insights.api.InsightsPlugin;
-import org.bukkit.scheduler.BukkitTask;
+import me.nahu.scheduler.wrapper.task.WrappedTask;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +12,7 @@ public class TickResetCount<T> {
     private final int size;
     private final Map<T, IntegerCount> counts;
     private final ResetTask resetTask;
-    private BukkitTask bukkitTask = null;
+    private WrappedTask task = null;
 
     /**
      * Constructs a new TickResetCount.
@@ -30,12 +30,11 @@ public class TickResetCount<T> {
      * @throws IllegalStateException If the task is already running.
      */
     public void start() {
-        if (bukkitTask != null) {
+        if (task != null) {
             throw new IllegalStateException("ResetTask is already running!");
         }
 
-        this.bukkitTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(
-                plugin,
+        this.task = plugin.getScheduler().runTaskTimerAsynchronously(
                 resetTask,
                 0,
                 intervalTicks
@@ -47,12 +46,12 @@ public class TickResetCount<T> {
      * @throws IllegalStateException If the task is not running.
      */
     public void stop() {
-        if (bukkitTask == null) {
+        if (task == null) {
             throw new IllegalStateException("ResetTask is not running!");
         }
 
-        this.bukkitTask.cancel();
-        this.bukkitTask = null;
+        this.task.cancel();
+        this.task = null;
     }
 
     public int getCurrentTick() {

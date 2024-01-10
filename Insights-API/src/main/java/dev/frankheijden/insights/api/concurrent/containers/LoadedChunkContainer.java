@@ -1,5 +1,6 @@
 package dev.frankheijden.insights.api.concurrent.containers;
 
+import dev.frankheijden.insights.api.InsightsPlugin;
 import dev.frankheijden.insights.api.concurrent.ScanOptions;
 import dev.frankheijden.insights.api.objects.chunk.ChunkCuboid;
 import dev.frankheijden.insights.nms.core.ChunkEntity;
@@ -24,11 +25,17 @@ public class LoadedChunkContainer extends ChunkContainer {
 
     @Override
     public void getChunkSections(Consumer<@Nullable ChunkSection> sectionConsumer) {
-        nms.getLoadedChunkSections(chunk, sectionConsumer);
+        InsightsPlugin.getInstance().getScheduler().runTaskAtLocation(
+            chunk.getBlock(0, 0, 0).getLocation(),
+            () -> nms.getLoadedChunkSections(chunk, sectionConsumer)
+        );
     }
 
     @Override
     public void getChunkEntities(Consumer<@NotNull ChunkEntity> entityConsumer) {
-        nms.getLoadedChunkEntities(chunk, entityConsumer);
+        InsightsPlugin.getInstance().getScheduler().runTaskAtLocation(
+            chunk.getBlock(0, 0, 0).getLocation(),
+            () -> nms.getLoadedChunkEntities(chunk, entityConsumer)
+        );
     }
 }

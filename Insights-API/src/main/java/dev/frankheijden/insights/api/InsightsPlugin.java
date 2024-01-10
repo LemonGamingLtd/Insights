@@ -1,5 +1,6 @@
 package dev.frankheijden.insights.api;
 
+import me.nahu.scheduler.wrapper.WrappedScheduler;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,4 +31,6 @@ public abstract class InsightsPlugin extends JavaPlugin implements InsightsMain 
         Plugin plugin = getServer().getPluginManager().getPlugin(pluginName);
         return plugin != null && plugin.isEnabled();
     }
+
+    public abstract WrappedScheduler getScheduler();
 }

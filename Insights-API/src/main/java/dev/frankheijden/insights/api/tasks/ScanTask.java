@@ -13,10 +13,6 @@ import dev.frankheijden.insights.api.objects.wrappers.ScanObject;
 import dev.frankheijden.insights.api.util.TriConsumer;
 import dev.frankheijden.insights.api.utils.EnumUtils;
 import dev.frankheijden.insights.api.utils.StringUtils;
-import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -31,6 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import me.nahu.scheduler.wrapper.task.WrappedTask;
+import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 
 public class ScanTask<R> implements Runnable {
 
@@ -51,7 +50,7 @@ public class ScanTask<R> implements Runnable {
     private final AtomicBoolean completedExceptionally = new AtomicBoolean();
     private final int chunkCount;
     private long lastInfo = 0;
-    private BukkitTask task;
+    private WrappedTask task;
 
     /**
      * Creates a new ScanTask to scan a collection of ChunkPart's.
@@ -370,8 +369,11 @@ public class ScanTask<R> implements Runnable {
     }
 
     private void start() {
-        BukkitScheduler scheduler = plugin.getServer().getScheduler();
-        task = scheduler.runTaskTimer(plugin, this, 0, plugin.getSettings().SCANS_ITERATION_INTERVAL_TICKS);
+        task = plugin.getScheduler().runTaskTimerAsynchronously(
+            this,
+            1,
+            plugin.getSettings().SCANS_ITERATION_INTERVAL_TICKS
+        );
     }
 
     private void cancel() {
@@ -416,24 +418,25 @@ public class ScanTask<R> implements Runnable {
             var loc = chunkPart.getChunkLocation();
             var world = loc.getWorld();
 
-            CompletableFuture<Storage> storageFuture;
-            if (world.isChunkLoaded(loc.getX(), loc.getZ())) {
-                storageFuture = executor.submit(
+            plugin.getScheduler().runTaskAtLocation(loc.getBlockLocation(), () -> {
+                CompletableFuture<Storage> storageFuture;
+                if (world.isChunkLoaded(loc.getX(), loc.getZ())) {
+                    storageFuture = executor.submit(
                         world.getChunkAt(loc.getX(), loc.getZ()),
                         chunkPart.getChunkCuboid(),
                         options
-                );
-            } else {
-                storageFuture = executor.submit(
+                    );
+                } else {
+                    storageFuture = executor.submit(
                         loc.getWorld(),
                         loc.getX(),
                         loc.getZ(),
                         chunkPart.getChunkCuboid(),
                         options
-                );
-            }
+                    );
+                }
 
-            storageFuture
+                storageFuture
                     .thenAccept(storage -> resultMerger.accept(storage, loc, result))
                     .thenRun(() -> {
                         iterationChunks.incrementAndGet();
@@ -445,6 +448,7 @@ public class ScanTask<R> implements Runnable {
                         }
                         return null;
                     });
+            });
         }
     }
 

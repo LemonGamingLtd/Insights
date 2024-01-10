@@ -30,20 +30,19 @@ public class ChunkTeleport {
                 return;
             }
 
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                int blockX = (x << 4) + 8;
-                int blockZ = (z << 4) + 8;
-                int blockY = world.getHighestBlockYAt(blockX, blockZ, HeightMap.MOTION_BLOCKING) + 1;
-                var loc = new Location(world, blockX + .5, blockY, blockZ + .5);
-                PaperLib.teleportAsync(player, loc).whenComplete((success, tpErr) -> {
-                    if (tpErr != null) {
-                        resultFuture.completeExceptionally(tpErr);
-                    } else if (Boolean.FALSE.equals(success)) {
-                        resultFuture.complete(Result.FAILED);
-                    } else {
-                        resultFuture.complete(Result.SUCCESS);
-                    }
-                });
+            int blockX = (x << 4) + 8;
+            int blockZ = (z << 4) + 8;
+            int blockY = world.getHighestBlockYAt(blockX, blockZ, HeightMap.MOTION_BLOCKING) + 1;
+            var loc = new Location(world, blockX + .5, blockY, blockZ + .5);
+
+            PaperLib.teleportAsync(player, loc).whenComplete((success, tpErr) -> {
+                if (tpErr != null) {
+                    resultFuture.completeExceptionally(tpErr);
+                } else if (Boolean.FALSE.equals(success)) {
+                    resultFuture.complete(Result.FAILED);
+                } else {
+                    resultFuture.complete(Result.SUCCESS);
+                }
             });
         });
 
