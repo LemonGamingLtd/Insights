@@ -39,7 +39,8 @@ public class EntityListener extends InsightsListener {
             EntityType.ENDER_CRYSTAL,
             EntityType.ITEM_FRAME,
             EntityType.GLOW_ITEM_FRAME,
-            EntityType.PAINTING
+            EntityType.PAINTING,
+            EntityType.BOAT
     );
 
     private final Set<UUID> removedEntities;
