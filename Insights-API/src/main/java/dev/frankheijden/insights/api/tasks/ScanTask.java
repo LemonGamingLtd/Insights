@@ -369,7 +369,7 @@ public class ScanTask<R> implements Runnable {
     }
 
     private void start() {
-        task = plugin.getScheduler().runTaskTimerAsynchronously(
+        task = plugin.getScheduler().runTaskTimer(
             this,
             1,
             plugin.getSettings().SCANS_ITERATION_INTERVAL_TICKS
@@ -418,37 +418,35 @@ public class ScanTask<R> implements Runnable {
             var loc = chunkPart.getChunkLocation();
             var world = loc.getWorld();
 
-            plugin.getScheduler().runTaskAtLocation(loc.getBlockLocation(), () -> {
-                CompletableFuture<Storage> storageFuture;
-                if (world.isChunkLoaded(loc.getX(), loc.getZ())) {
-                    storageFuture = executor.submit(
-                        world.getChunkAt(loc.getX(), loc.getZ()),
-                        chunkPart.getChunkCuboid(),
-                        options
-                    );
-                } else {
-                    storageFuture = executor.submit(
-                        loc.getWorld(),
-                        loc.getX(),
-                        loc.getZ(),
-                        chunkPart.getChunkCuboid(),
-                        options
-                    );
-                }
+            CompletableFuture<Storage> storageFuture;
+            if (world.isChunkLoaded(loc.getX(), loc.getZ())) {
+                storageFuture = executor.submit(
+                    world.getChunkAt(loc.getX(), loc.getZ()),
+                    chunkPart.getChunkCuboid(),
+                    options
+                );
+            } else {
+                storageFuture = executor.submit(
+                    loc.getWorld(),
+                    loc.getX(),
+                    loc.getZ(),
+                    chunkPart.getChunkCuboid(),
+                    options
+                );
+            }
 
-                storageFuture
-                    .thenAccept(storage -> resultMerger.accept(storage, loc, result))
-                    .thenRun(() -> {
-                        iterationChunks.incrementAndGet();
-                        chunks.incrementAndGet();
-                    })
-                    .exceptionally(th -> {
-                        if (!completedExceptionally.getAndSet(true)) {
-                            plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
-                        }
-                        return null;
-                    });
-            });
+            storageFuture
+                .thenAccept(storage -> resultMerger.accept(storage, loc, result))
+                .thenRun(() -> {
+                    iterationChunks.incrementAndGet();
+                    chunks.incrementAndGet();
+                })
+                .exceptionally(th -> {
+                    if (!completedExceptionally.getAndSet(true)) {
+                        plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
+                    }
+                    return null;
+                });
         }
     }
 

@@ -179,7 +179,7 @@ public class Insights extends InsightsPlugin {
         if (!PaperLib.isPaper()) {
             entityTrackerTask = new EntityTrackerTask(this);
             var interval = settings.SPIGOT_ENTITY_TRACKER_INTERVAL_TICKS;
-            getScheduler().runTaskTimer(entityTrackerTask, 0, interval);
+            getScheduler().runTaskTimer(entityTrackerTask, 1, interval);
         }
 
         reload();

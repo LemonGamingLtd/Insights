@@ -234,14 +234,12 @@ public abstract class InsightsListener extends InsightsBase implements Listener 
             }
 
             // Submit the chunk for scanning
-            plugin.getScheduler().runTaskAtLocation(chunk.getBlock(0, 0, 0).getLocation(), () -> {
-                plugin.getChunkContainerExecutor().submit(chunk)
-                    .thenAccept(storageConsumer)
-                    .exceptionally(th -> {
-                        plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
-                        return null;
-                    });
-            });
+            plugin.getChunkContainerExecutor().submit(chunk)
+                .thenAccept(storageConsumer)
+                .exceptionally(th -> {
+                    plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
+                    return null;
+                });
         }
         return storageOptional;
     }
@@ -344,14 +342,12 @@ public abstract class InsightsListener extends InsightsBase implements Listener 
             if (regionOptional.isPresent()) {
                 scanRegion(player, regionOptional.get(), storageConsumer);
             } else {
-                plugin.getScheduler().runTaskAtLocation(chunk.getBlock(0, 0, 0).getLocation(), () -> {
-                    plugin.getChunkContainerExecutor().submit(chunk)
-                        .thenAccept(storageConsumer)
-                        .exceptionally(th -> {
-                            plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
-                            return null;
-                        });
-                });
+                plugin.getChunkContainerExecutor().submit(chunk)
+                    .thenAccept(storageConsumer)
+                    .exceptionally(th -> {
+                        plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
+                        return null;
+                    });
             }
         }
     }
