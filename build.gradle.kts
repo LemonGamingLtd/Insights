@@ -12,7 +12,7 @@ plugins {
 val name = "Insights"
 group = "dev.frankheijden.insights"
 val dependencyDir = "$group.dependencies"
-version = "6.17.1-SNAPSHOT"
+version = "6.17.3-SNAPSHOT"
 
 subprojects {
     apply(plugin = "java")
@@ -109,6 +109,7 @@ subprojects {
         relocate("org.bstats", "$dependencyDir.bstats")
         relocate("net.kyori.adventure", "$dependencyDir.adventure")
         relocate("net.kyori.examination", "$dependencyDir.examination")
+        relocate("net.kyori.option", "$dependencyDir.option")
         relocate("me.nahu.scheduler", "$dependencyDir.scheduler")
         if (nmsImpl) {
             relocate(project.group.toString().replaceAfterLast('.', "impl"), project.group.toString())
@@ -166,6 +167,22 @@ val artifact: PublishArtifact = artifacts.add("archives", artifactFile) {
     version = rootProject.version
     classifier = ""
     builtBy("shadowJar")
+}
+
+fun Project.isRelease(): Boolean {
+    return version.toString().toVersion().preRelease == null
+}
+
+task("printIsRelease") {
+    doLast {
+        println(isRelease())
+    }
+}
+
+task("printVersion") {
+    doLast {
+        println(version.toString())
+    }
 }
 
 publishing {
