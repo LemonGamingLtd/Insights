@@ -9,6 +9,8 @@ import dev.frankheijden.insights.nms.core.InsightsNMS;
 import org.bukkit.Chunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class LoadedChunkContainer extends ChunkContainer {
@@ -24,18 +26,22 @@ public class LoadedChunkContainer extends ChunkContainer {
     }
 
     @Override
-    public void getChunkSections(Consumer<@Nullable ChunkSection> sectionConsumer) {
+    public CompletableFuture<Boolean> getChunkSections(Consumer<@Nullable ChunkSection> sectionConsumer) {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
         InsightsPlugin.getInstance().getScheduler().runTaskAtLocation(
             chunk.getBlock(0, 0, 0).getLocation(),
-            () -> nms.getLoadedChunkSections(chunk, sectionConsumer)
+            () -> result.complete(nms.getLoadedChunkSections(chunk, sectionConsumer).join())
         );
+        return result;
     }
 
     @Override
-    public void getChunkEntities(Consumer<@NotNull ChunkEntity> entityConsumer) {
+    public CompletableFuture<Boolean> getChunkEntities(Consumer<@NotNull ChunkEntity> entityConsumer) {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
         InsightsPlugin.getInstance().getScheduler().runTaskAtLocation(
             chunk.getBlock(0, 0, 0).getLocation(),
-            () -> nms.getLoadedChunkEntities(chunk, entityConsumer)
+            () -> result.complete(nms.getLoadedChunkEntities(chunk, entityConsumer).join())
         );
+        return result;
     }
 }

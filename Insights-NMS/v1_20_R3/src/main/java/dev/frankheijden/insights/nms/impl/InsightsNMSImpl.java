@@ -31,17 +31,19 @@ import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.EntityType;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class InsightsNMSImpl extends InsightsNMS {
 
     @Override
-    public void getLoadedChunkSections(Chunk chunk, Consumer<ChunkSection> sectionConsumer) {
+    public CompletableFuture<Boolean> getLoadedChunkSections(Chunk chunk, Consumer<ChunkSection> sectionConsumer) {
         LevelChunkSection[] levelChunkSections = ((CraftChunk) chunk).getHandle(ChunkStatus.FULL).getSections();
         for (int i = 0; i < levelChunkSections.length; i++) {
             sectionConsumer.accept(new ChunkSectionImpl(levelChunkSections[i], i));
         }
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override
@@ -98,7 +100,7 @@ public class InsightsNMSImpl extends InsightsNMS {
     }
 
     @Override
-    public void getLoadedChunkEntities(Chunk chunk, Consumer<ChunkEntity> entityConsumer) {
+    public CompletableFuture<Boolean> getLoadedChunkEntities(Chunk chunk, Consumer<ChunkEntity> entityConsumer) {
         for (org.bukkit.entity.Entity bukkitEntity : chunk.getEntities()) {
             Entity entity = ((CraftEntity) bukkitEntity).getHandle();
             entityConsumer.accept(new ChunkEntity(
@@ -108,6 +110,7 @@ public class InsightsNMSImpl extends InsightsNMS {
                     entity.getBlockZ()
             ));
         }
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override

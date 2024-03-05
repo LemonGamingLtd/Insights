@@ -3,6 +3,7 @@ package dev.frankheijden.insights.nms.core;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +27,10 @@ public abstract class InsightsNMS {
         }
     }
 
-    public abstract void getLoadedChunkSections(Chunk chunk, Consumer<ChunkSection> sectionConsumer);
+    public abstract CompletableFuture<Boolean> getLoadedChunkSections(
+            Chunk chunk,
+            Consumer<ChunkSection> sectionConsumer
+    );
 
     public abstract void getUnloadedChunkSections(
             World world,
@@ -35,7 +39,10 @@ public abstract class InsightsNMS {
             Consumer<ChunkSection> sectionConsumer
     );
 
-    public abstract void getLoadedChunkEntities(Chunk chunk, Consumer<ChunkEntity> entityConsumer);
+    public abstract CompletableFuture<Boolean> getLoadedChunkEntities(
+            Chunk chunk,
+            Consumer<ChunkEntity> entityConsumer
+    );
 
     public abstract void getUnloadedChunkEntities(
             World world,

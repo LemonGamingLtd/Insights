@@ -14,8 +14,10 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public abstract class ChunkContainer implements SupplierContainer<DistributionStorage> {
@@ -70,9 +72,13 @@ public abstract class ChunkContainer implements SupplierContainer<DistributionSt
         return cuboid;
     }
 
-    public abstract void getChunkSections(Consumer<@NotNull ChunkSection> sectionConsumer) throws IOException;
+    public abstract CompletableFuture<Boolean> getChunkSections(
+            Consumer<@NotNull ChunkSection> sectionConsumer
+    ) throws IOException;
 
-    public abstract void getChunkEntities(Consumer<@NotNull ChunkEntity> entityConsumer) throws IOException;
+    public abstract CompletableFuture<Boolean> getChunkEntities(
+            Consumer<@NotNull ChunkEntity> entityConsumer
+    ) throws IOException;
 
     @Override
     public DistributionStorage get() {
@@ -126,7 +132,7 @@ public abstract class ChunkContainer implements SupplierContainer<DistributionSt
                             }
                         }
                     }
-                });
+                }).join();
             } catch (IOException ex) {
                 throw new ChunkIOException(ex);
             }
@@ -141,7 +147,7 @@ public abstract class ChunkContainer implements SupplierContainer<DistributionSt
                     if (minX <= x && x <= maxX && blockMinY <= y && y <= blockMaxY && minZ <= z && z <= maxZ) {
                         entityMap.merge(entity.type(), 1L, Long::sum);
                     }
-                });
+                }).join();
             } catch (IOException ex) {
                 throw new ChunkIOException(ex);
             }

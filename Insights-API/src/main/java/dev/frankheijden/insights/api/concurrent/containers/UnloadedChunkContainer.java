@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class UnloadedChunkContainer extends ChunkContainer {
@@ -28,12 +29,14 @@ public class UnloadedChunkContainer extends ChunkContainer {
     }
 
     @Override
-    public void getChunkSections(Consumer<@Nullable ChunkSection> sectionConsumer) {
+    public CompletableFuture<Boolean> getChunkSections(Consumer<@Nullable ChunkSection> sectionConsumer) {
         nms.getUnloadedChunkSections(world, chunkX, chunkZ, sectionConsumer);
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override
-    public void getChunkEntities(Consumer<@NotNull ChunkEntity> entityConsumer) throws IOException {
+    public CompletableFuture<Boolean> getChunkEntities(Consumer<@NotNull ChunkEntity> entityConsumer) throws IOException {
         nms.getUnloadedChunkEntities(world, chunkX, chunkZ, entityConsumer);
+        return CompletableFuture.completedFuture(true);
     }
 }
