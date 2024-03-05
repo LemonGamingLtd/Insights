@@ -3,7 +3,6 @@ package dev.frankheijden.insights.api.concurrent.storage;
 import dev.frankheijden.insights.api.objects.wrappers.ScanObject;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

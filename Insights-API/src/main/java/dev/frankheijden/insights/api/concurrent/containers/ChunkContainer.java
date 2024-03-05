@@ -14,7 +14,6 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

@@ -35,7 +35,9 @@ public class UnloadedChunkContainer extends ChunkContainer {
     }
 
     @Override
-    public CompletableFuture<Boolean> getChunkEntities(Consumer<@NotNull ChunkEntity> entityConsumer) throws IOException {
+    public CompletableFuture<Boolean> getChunkEntities(
+            Consumer<@NotNull ChunkEntity> entityConsumer
+    ) throws IOException {
         nms.getUnloadedChunkEntities(world, chunkX, chunkZ, entityConsumer);
         return CompletableFuture.completedFuture(true);
     }

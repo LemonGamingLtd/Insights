@@ -9,7 +9,6 @@ import dev.frankheijden.insights.nms.core.InsightsNMS;
 import org.bukkit.Chunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
