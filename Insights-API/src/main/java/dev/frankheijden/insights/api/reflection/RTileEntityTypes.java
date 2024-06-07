@@ -26,7 +26,7 @@ public class RTileEntityTypes {
                 "net.minecraft.world.level.block.entity.TileEntityTypes"
         );
         var craftBlockDataReflection = MinecraftReflection.of(
-                "org.bukkit.craftbukkit.%s.block.data.CraftBlockData"
+                "org.bukkit.craftbukkit.block.data.CraftBlockData"
         );
         var blockStateReflection = MinecraftReflection.of(
                 "net.minecraft.world.level.block.state.IBlockData"
