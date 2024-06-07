@@ -5,7 +5,7 @@ import java.nio.file.Files
 plugins {
     `java-library`
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version VersionConstants.shadowVersion
+    id("io.github.goooler.shadow") version VersionConstants.shadowVersion
     id("io.papermc.paperweight.userdev") version VersionConstants.userdevVersion apply false
 }
 
@@ -17,7 +17,7 @@ version = "6.17.3-SNAPSHOT"
 subprojects {
     apply(plugin = "java")
     apply(plugin = "checkstyle")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "io.github.goooler.shadow")
 
     version = rootProject.version
 
@@ -79,8 +79,8 @@ subprojects {
         compileJava {
             options.encoding = Charsets.UTF_8.name()
             options.isDeprecation = true
-            sourceCompatibility = JavaVersion.VERSION_17.majorVersion
-            targetCompatibility = JavaVersion.VERSION_17.majorVersion
+            sourceCompatibility = JavaVersion.VERSION_21.majorVersion
+            targetCompatibility = JavaVersion.VERSION_21.majorVersion
         }
 
         javadoc {

@@ -1,7 +1,5 @@
 package dev.frankheijden.insights;
 
-import static dev.frankheijden.minecraftreflection.MinecraftReflectionVersion.isMin;
-
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.arguments.parser.ParserRegistry;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
@@ -111,30 +109,9 @@ public class Insights extends InsightsPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
-        if (isMin(19)) {
-            if (isMin(19, 3)) {
-                if (PaperLib.isPaper()) {
-                    nms = InsightsNMS.get(InsightsNMSVersion.v1_19_4_R3);
-                }
-            } else if (isMin(19, 2)) {
-                if (PaperLib.isPaper()) {
-                    nms = InsightsNMS.get(InsightsNMSVersion.v1_19_3_R2);
-                }
-            } else if (isMin(19, 1) && PaperLib.isPaper()) {
-                nms = InsightsNMS.get(InsightsNMSVersion.v1_19_2_R1);
-            } else {
-                nms = InsightsNMS.get(InsightsNMSVersion.v1_19_1_R1);
-            }
-        }
-        if (isMin(20) && PaperLib.isPaper()) {
-            if (isMin(20, 3)) {
-                nms = InsightsNMS.get(InsightsNMSVersion.v1_20_R3);
-            } else if (isMin(20, 2)) {
-                nms = InsightsNMS.get(InsightsNMSVersion.v1_20_R2);
-            } else {
-                nms = InsightsNMS.get(InsightsNMSVersion.v1_20_R1);
-            }
-        }
+
+        nms = InsightsNMS.get(InsightsNMSVersion.v1_20_R4);
+
         if (nms == null) {
             throw new RuntimeException("Insights is incompatible with your server version");
         }
