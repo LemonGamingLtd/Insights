@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
-    id("net.minecrell.plugin-yml.bukkit") version VersionConstants.pluginYmlVersion
+    alias(libs.plugins.pluginYml)
 }
 
 val dependencyDir = "$group.dependencies"
@@ -12,17 +12,19 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.mojang:brigadier:${VersionConstants.brigadierVersion}")
-    compileOnly("me.clip:placeholderapi:${VersionConstants.placeholderapiVersion}")
-    implementation("me.lucko:commodore:${VersionConstants.commodoreVersion}")
-    implementation("cloud.commandframework:cloud-paper:${VersionConstants.cloudVersion}")
-    implementation("cloud.commandframework:cloud-annotations:${VersionConstants.cloudVersion}")
+    compileOnly(libs.brigadier)
+    compileOnly(libs.placeholderapi)
+    implementation(libs.commodore)
+    implementation(libs.cloudPaper)
+    implementation(libs.cloudAnnotations)
+    implementation(libs.semver)
     compileOnly(project(":Insights-API"))
 }
 
 tasks.withType<ShadowJar> {
     exclude("com/mojang/**")
-    relocate("cloud.commandframework", "$dependencyDir.cloud")
+    relocate("com.github.zafarkhaja.semver", "$dependencyDir.semver")
+    relocate("org.incendo.cloud", "$dependencyDir.cloud")
     relocate("io.leangen.geantyref", "$dependencyDir.typetoken")
     relocate("me.lucko.commodore", "$dependencyDir.commodore")
 }
@@ -30,7 +32,7 @@ tasks.withType<ShadowJar> {
 bukkit {
     main = "dev.frankheijden.insights.Insights"
     description = "Insights about your server and regional block limits"
-    apiVersion = "1.19"
+    apiVersion = "1.21"
     website = "https://github.com/InsightsPlugin/Insights"
     softDepend = listOf("PlaceholderAPI")
     authors = listOf("FrankHeijden")

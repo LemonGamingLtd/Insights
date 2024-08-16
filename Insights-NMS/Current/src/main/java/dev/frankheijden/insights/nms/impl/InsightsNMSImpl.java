@@ -1,12 +1,12 @@
 package dev.frankheijden.insights.nms.impl;
 
 import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
+import ca.spottedleaf.moonrise.patches.chunk_system.io.RegionFileIOThread;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import dev.frankheijden.insights.nms.core.ChunkEntity;
 import dev.frankheijden.insights.nms.core.ChunkSection;
 import dev.frankheijden.insights.nms.core.InsightsNMS;
-import io.papermc.paper.chunk.system.io.RegionFileIOThread;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -80,12 +80,19 @@ public class InsightsNMSImpl extends InsightsNMS {
                         chunkZ,
                         message
                 )));
-                blockStateContainer = dataResult.getOrThrow();
+
+                try {
+                    blockStateContainer = dataResult.getOrThrow();
+                } catch (IllegalStateException ex) {
+                    logger.severe(ex.getMessage());
+                    throw ex;
+                }
             } else {
                 blockStateContainer = new PalettedContainer<>(
                         Block.BLOCK_STATE_REGISTRY,
                         Blocks.AIR.defaultBlockState(),
-                        PalettedContainer.Strategy.SECTION_STATES
+                        PalettedContainer.Strategy.SECTION_STATES,
+                        null
                 );
             }
 
