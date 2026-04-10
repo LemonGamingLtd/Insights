@@ -187,6 +187,11 @@ public class ScanTask<R> implements Runnable {
                 DistributionStorage::new,
                 (storage, loc, acc) -> storage.mergeRight(acc),
                 storage -> {
+                    if (storage == null) {
+                        plugin.getMessages().getMessage(Messages.Key.SCAN_FAILED).sendTo(player);
+                        return;
+                    }
+
                     // The time it took to generate the results
                     @SuppressWarnings("VariableDeclarationUsageDistance")
                     long millis = (System.nanoTime() - start) / 1000000L;
@@ -305,6 +310,11 @@ public class ScanTask<R> implements Runnable {
                 (Supplier<ConcurrentHashMap<ChunkLocation, Storage>>) ConcurrentHashMap::new,
                 (storage, loc, map) -> map.put(loc, storage),
                 map -> {
+                    if (map == null) {
+                        plugin.getMessages().getMessage(Messages.Key.SCAN_FAILED).sendTo(player);
+                        return;
+                    }
+
                     // The time it took to generate the results
                     @SuppressWarnings("VariableDeclarationUsageDistance")
                     long millis = (System.nanoTime() - start) / 1000000L;
@@ -418,35 +428,37 @@ public class ScanTask<R> implements Runnable {
             var loc = chunkPart.getChunkLocation();
             var world = loc.getWorld();
 
-            CompletableFuture<Storage> storageFuture;
-            if (world.isChunkLoaded(loc.getX(), loc.getZ())) {
-                storageFuture = executor.submit(
-                    world.getChunkAt(loc.getX(), loc.getZ()),
-                    chunkPart.getChunkCuboid(),
-                    options
-                );
-            } else {
-                storageFuture = executor.submit(
-                    loc.getWorld(),
-                    loc.getX(),
-                    loc.getZ(),
-                    chunkPart.getChunkCuboid(),
-                    options
-                );
-            }
+            plugin.getScheduler().runTaskAtLocation(loc.getBlockLocation(), () -> {
+                CompletableFuture<Storage> storageFuture;
+                if (world.isChunkLoaded(loc.getX(), loc.getZ())) {
+                    storageFuture = executor.submit(
+                        world.getChunkAt(loc.getX(), loc.getZ()),
+                        chunkPart.getChunkCuboid(),
+                        options
+                    );
+                } else {
+                    storageFuture = executor.submit(
+                        loc.getWorld(),
+                        loc.getX(),
+                        loc.getZ(),
+                        chunkPart.getChunkCuboid(),
+                        options
+                    );
+                }
 
-            storageFuture
-                .thenAccept(storage -> resultMerger.accept(storage, loc, result))
-                .thenRun(() -> {
-                    iterationChunks.incrementAndGet();
-                    chunks.incrementAndGet();
-                })
-                .exceptionally(th -> {
-                    if (!completedExceptionally.getAndSet(true)) {
-                        plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
-                    }
-                    return null;
-                });
+                storageFuture
+                    .thenAccept(storage -> resultMerger.accept(storage, loc, result))
+                    .thenRun(() -> {
+                        iterationChunks.incrementAndGet();
+                        chunks.incrementAndGet();
+                    })
+                    .exceptionally(th -> {
+                        if (!completedExceptionally.getAndSet(true)) {
+                            plugin.getLogger().log(Level.SEVERE, th, th::getMessage);
+                        }
+                        return null;
+                    });
+            });
         }
     }
 

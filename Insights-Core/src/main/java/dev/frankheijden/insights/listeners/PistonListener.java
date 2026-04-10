@@ -101,6 +101,7 @@ public class PistonListener extends InsightsListener {
                 List<ChunkPart> chunkParts = region.toChunkParts();
                 ScanTask.scan(plugin, chunkParts, chunkParts.size(), ScanOptions.scanOnly(), info -> {}, storage -> {
                     plugin.getAddonScanTracker().remove(region.getAddon());
+                    if (storage == null) return;
                     plugin.getAddonStorage().put(region.getKey(), storage);
                 });
             } else {

@@ -86,16 +86,19 @@ public class ChunkContainerExecutor implements ContainerExecutor {
             scanTracker.set(worldUid, chunkKey, true);
         }
 
-        return submit(container).thenApply(storage -> {
-            if (options.save()) worldStorage.getWorld(worldUid).put(chunkKey, storage);
-            if (options.track()) scanTracker.set(worldUid, chunkKey, false);
+        return submit(container)
+                .whenComplete((storage, throwable) -> {
+                    if (options.track()) scanTracker.set(worldUid, chunkKey, false);
+                })
+                .thenApply(storage -> {
+                    if (options.save()) worldStorage.getWorld(worldUid).put(chunkKey, storage);
 
-            var metricsManager = InsightsPlugin.getInstance().getMetricsManager();
-            metricsManager.getChunkScanMetric().increment();
-            metricsManager.getTotalBlocksScanned().add(container.getChunkCuboid().getVolume());
+                    var metricsManager = InsightsPlugin.getInstance().getMetricsManager();
+                    metricsManager.getChunkScanMetric().increment();
+                    metricsManager.getTotalBlocksScanned().add(container.getChunkCuboid().getVolume());
 
-            return storage;
-        });
+                    return storage;
+                });
     }
 
     @Override

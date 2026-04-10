@@ -366,6 +366,7 @@ public abstract class InsightsListener extends InsightsBase implements Listener 
                 (storage, loc, acc) -> storage.mergeRight(acc),
                 storage -> {
                     plugin.getAddonScanTracker().remove(region.getAddon());
+                    if (storage == null) return;
 
                     // Store the cuboid
                     plugin.getAddonStorage().put(region.getKey(), storage);
