@@ -26,7 +26,6 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -34,20 +33,30 @@ import java.util.UUID;
 
 public class EntityListener extends InsightsListener {
 
-    protected static final Set<EntityType> LIMITED_ENTITIES = EnumSet.of(
-            EntityType.ARMOR_STAND,
-            EntityType.END_CRYSTAL,
-            EntityType.ITEM_FRAME,
-            EntityType.GLOW_ITEM_FRAME,
-            EntityType.PAINTING,
-            EntityType.BOAT
-    );
+    protected static final Set<EntityType> LIMITED_ENTITIES = createLimitedEntities();
 
     private final Set<UUID> removedEntities;
 
     public EntityListener(InsightsPlugin plugin) {
         super(plugin);
         this.removedEntities = new HashSet<>();
+    }
+
+    private static Set<EntityType> createLimitedEntities() {
+        Set<EntityType> entityTypes = new HashSet<>();
+        entityTypes.add(EntityType.ARMOR_STAND);
+        entityTypes.add(EntityType.END_CRYSTAL);
+        entityTypes.add(EntityType.ITEM_FRAME);
+        entityTypes.add(EntityType.GLOW_ITEM_FRAME);
+        entityTypes.add(EntityType.PAINTING);
+
+        for (EntityType entityType : EntityType.values()) {
+            if (entityType.name().endsWith("_BOAT")) {
+                entityTypes.add(entityType);
+            }
+        }
+
+        return entityTypes;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

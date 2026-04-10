@@ -1,2 +1,2 @@
 # Changelog
-- Fix /scanworld command parser, thx @ben9964 <3
+- Fix [#219](https://github.com/InsightsPlugin/Insights/issues/219), waterlogged blocks being counted on bucket filling. By @Jsinco
