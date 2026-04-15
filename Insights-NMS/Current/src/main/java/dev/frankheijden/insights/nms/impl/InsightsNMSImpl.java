@@ -28,6 +28,8 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -67,7 +69,7 @@ public class InsightsNMSImpl extends InsightsNMS {
         }
         ListTag sectionsTagList = optionalSectionsTagList.get();
 
-        DataResult<PalettedContainer<BlockState>> dataResult;
+        DataResult<PalettedContainer<@NotNull BlockState>> dataResult;
         int nonNullSectionCount = 0;
         for (int i = 0; i < sectionsTagList.size(); i++) {
             Optional<CompoundTag> optionalSectionTag = sectionsTagList.getCompound(i);
