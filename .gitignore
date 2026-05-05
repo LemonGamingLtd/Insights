@@ -3,6 +3,7 @@
 .gradle/
 build/
 jars/
+run/
 *.class
 *.jar
 .java-version
